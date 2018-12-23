@@ -10,7 +10,7 @@ import Foundation
 
 class MainServiceImplementation: MainService {
     
-    func profile(completion: @escaping (MainServiceBaseResult) -> Void) {
+    func profile(completion: @escaping (MainServiceUserResult) -> Void) {
         
         //todo add error message
         guard let token = UserDefaultsSettings.currentAccessToken() else {
@@ -19,7 +19,7 @@ class MainServiceImplementation: MainService {
             return
             
         }
-
+        
         let urlComponents = NSURLComponents(string: URLStringsHelper.string(for: .baseURL) + URLStringsHelper.string(for: .getUser))!
         
         urlComponents.queryItems = [
@@ -28,11 +28,11 @@ class MainServiceImplementation: MainService {
             URLQueryItem(name: "access_token", value: token),
             URLQueryItem(name: "fields", value: "about,bdate,city,counters,contacts,country,home_town,interests, last_seen,online,photo_200_orig,sex,status")
         ]
-
+        
         
         var request = URLRequest(url: urlComponents.url!)
         request.httpMethod = "GET"
-     
+        
         
         let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
             
@@ -45,9 +45,9 @@ class MainServiceImplementation: MainService {
                 completion(.failure(NSError(domain:"", code: 1, userInfo: nil) as Error))
                 return
             }
-           
+            
             do {
-        
+                
                 let userResponse: UserResponse = try JSONDecoder().decode(UserResponse.self, from: data)
                 guard let user = userResponse.response?.first else {
                     completion(.failure(NSError(domain:"", code: 1, userInfo: nil) as Error))
@@ -116,5 +116,77 @@ class MainServiceImplementation: MainService {
         
         task.resume()
     }
+    
+    func sendPost(message: String, ownerId: Int?, completion: @escaping (MainServiceBaseResult) -> Void) {
+        //todo add error message
+        guard let token = UserDefaultsSettings.currentAccessToken() else {
+            print("not token")
+            completion(.failure(NSError(domain:"", code: 1, userInfo:[ NSLocalizedDescriptionKey: "Invaild access token"]) as Error))
+            return
+            
+        }
+        
+        let urlComponents = NSURLComponents(string: URLStringsHelper.string(for: .baseURL) + URLStringsHelper.string(for: .wallPost))!
+        
+        var ownerID: String?
+        
+        if let LownerId = ownerId {
+            ownerID = String(LownerId)
+        } else {
+            ownerID = UserDefaultsSettings.currentUserID()
+        }
+        
+        urlComponents.queryItems = [
+            URLQueryItem(name: "message", value: message),
+            URLQueryItem(name: "v", value: URLStringsHelper.string(for: .apiVersion)),
+            URLQueryItem(name: "access_token", value: token),
+            URLQueryItem(name: "owner_id", value: ownerID)
+        
+        ]
+        
+        
+        var request = URLRequest(url: urlComponents.url!)
+        request.httpMethod = "POST"
+        
+        
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error in
+            
+            guard error == nil else {
+                completion(.failure(NSError(domain:"", code: 1, userInfo:[ NSLocalizedDescriptionKey: error?.localizedDescription ?? ""]) as Error))
+                return
+            }
+            
+            guard let data = data else {
+                completion(.failure(NSError(domain:"", code: 1, userInfo: nil) as Error))
+                return
+            }
+            
+            
+            do {
+                let dict = try JSONSerialization.jsonObject(with: data, options: .allowFragments)
+                guard let response = dict as? [String : Any] else {
+                    completion(.failure(NSError(domain:"", code: 1, userInfo: nil) as Error))
+                    return
+                }
+                
+                guard let responseResult = response["response"] as? [String : Any] else {
+                    completion(.failure(NSError(domain:"", code: 1, userInfo: nil) as Error))
+                    return
+                }
+                
+                guard let _ = responseResult["post_id"] as? Int  else {
+                    completion(.failure(NSError(domain:"", code: 1, userInfo: nil) as Error))
+                    return
+                }
+                completion(.success())
+            }
+            catch {
+                completion(.failure(NSError(domain:"", code: 1, userInfo: nil) as Error))
+            }
+        })
+        
+        task.resume()
+    }
+    
     
 }

@@ -14,6 +14,7 @@ class URLStringsHelper {
         case profile    = "/account.getProfileInfo"
         case getUser    = "/users.get"
         case wallGet    = "/wall.get"
+        case wallPost   = "/wall.post"
     }
     
     static func string(for key: URLKey) -> String {

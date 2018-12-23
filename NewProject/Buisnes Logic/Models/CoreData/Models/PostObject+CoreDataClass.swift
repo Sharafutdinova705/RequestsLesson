@@ -26,6 +26,7 @@ public class PostObject: NSManagedObject {
             postOject.text = item.text
             postOject.likes = LikesObject.transfrom(item.likes)
             postOject.attachments = AttachmentObject.transfrom(item.attachments ?? [])
+            postOject.comments = CommentsObject.transfrom(item.comments)
             
             result.append(postOject)
         }

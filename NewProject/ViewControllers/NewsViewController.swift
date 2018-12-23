@@ -20,7 +20,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     var dataManager: DataManager!
     var mainService: MainService!
     
-    let limit = 10
+    let limit = 15
     
     // MARK: - Методы -
     
@@ -33,8 +33,8 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         
         tableView.estimatedRowHeight = 400
         tableView.tableFooterView = UIView()
-
-      
+        
+        
         reloading()
         pullToRefresh()
         
@@ -50,16 +50,16 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
         tableView.refreshControl = refreshControl
         refreshControl.addTarget(self, action:  #selector(reloading), for: UIControlEvents.valueChanged)
     }
-
+    
     
     /// обновление данных
     @objc func reloading() {
-
+        
         DispatchQueue.main.async {
             self.tableView.reloadData()
             self.tableView.refreshControl?.endRefreshing()
         }
-   
+        
     }
     
     // MARK: - funcs of TableView -
@@ -71,26 +71,27 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier1) as! CustomTableViewCell
-        
         cell.addingContent(post: (self.postsArray[indexPath.row]), controller: self)
-        
+        cell.selectionStyle = .none
         return cell
     }
     
-
-//    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//        
-//        if segue.identifier == segueIdentifier {
-//            
-//            if let nextVC = segue.destination as? PostDetailViewController {
-//                
-//                nextVC.mainViewController = self
-//                nextVC.selectedIndex = tableView.indexPathForSelectedRow?.row
-//            }
-//        }
-//    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: "postDetailIdentifier", sender: postsArray[indexPath.row])
+    }
     
-  
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if segue.identifier == "postDetailIdentifier" {
+            
+            if let postDetailVC = segue.destination as? PostDetailViewController, let postObject = sender as? PostObject {
+                postDetailVC.postObject = postObject
+            }
+        }
+    }
+    
+    
     
     //MARK: - network
     
@@ -109,7 +110,7 @@ class NewsViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         })
     }
-
-        
+    
+    
     
 }

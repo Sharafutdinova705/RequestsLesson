@@ -15,15 +15,15 @@ protocol ViewControllerUtils {
     /// - Parameters:
     ///   - textOfPostLabel: Текст поста
     ///   - currentViewController: Контроллер NewsViewController
-    func shareAction(textOfPostLabel: UILabel, currentViewController: UIViewController)
+    func shareAction(textOfPostLabel: String?, currentViewController: UIViewController)
 }
 
 class ViewControllerUtilsImplementation: ViewControllerUtils {
     
-    func shareAction(textOfPostLabel: UILabel, currentViewController: UIViewController) {
+    func shareAction(textOfPostLabel: String?, currentViewController: UIViewController) {
         var defaultMessage = "default"
-        if textOfPostLabel.text != nil {
-            defaultMessage = textOfPostLabel.text!
+        if textOfPostLabel != nil {
+            defaultMessage = textOfPostLabel!
         }
         let activityController = UIActivityViewController(activityItems: [defaultMessage], applicationActivities: nil)
         currentViewController.present(activityController, animated: true, completion: nil)

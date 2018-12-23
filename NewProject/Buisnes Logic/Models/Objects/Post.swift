@@ -16,6 +16,7 @@ struct Post {
     var text        : String?
     var likes       : Likes?
     var attachments : [Attachment]?
+    var comments    : Comments?
     
     
     enum CodingKeys: String, CodingKey {
@@ -26,6 +27,7 @@ struct Post {
         case text
         case likes
         case attachments
+        case comments
     }
     
 }
@@ -33,6 +35,7 @@ struct Post {
 extension Post: Encodable {
     
     func encode(to encoder: Encoder) throws {
+        
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: .id)
         try container.encode(date, forKey: .date)
@@ -40,6 +43,7 @@ extension Post: Encodable {
         try container.encode(text, forKey: .text)
         try container.encode(likes, forKey: .likes)
         try container.encode(attachments, forKey: .attachments)
+        try container.encode(comments, forKey: .comments)
     }
     
 }
@@ -47,6 +51,7 @@ extension Post: Encodable {
 extension Post: Decodable {
     
     init(from decoder: Decoder) throws {
+        
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try? container.decode(Int.self, forKey: .id)
         date = try? container.decode(Date.self, forKey: .date)
@@ -54,6 +59,7 @@ extension Post: Decodable {
         text = try? container.decode(String.self, forKey: .text)
         likes = try? container.decode(Likes.self, forKey: .likes)
         attachments = try? container.decode([Attachment].self, forKey: .attachments)
+        comments = try? container.decode(Comments.self, forKey: .comments)
     }
 }
 

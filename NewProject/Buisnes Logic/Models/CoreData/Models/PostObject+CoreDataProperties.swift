@@ -2,7 +2,7 @@
 //  PostObject+CoreDataProperties.swift
 //  NewProject
 //
-//  Created by Гузель on 16/12/2018.
+//  Created by Гузель on 23/12/2018.
 //  Copyright © 2018 Гузель. All rights reserved.
 //
 //
@@ -23,6 +23,7 @@ extension PostObject {
     @NSManaged public var text: String?
     @NSManaged public var attachments: Set<AttachmentObject>?
     @NSManaged public var likes: LikesObject?
+    @NSManaged public var comments: CommentsObject?
 
 }
 

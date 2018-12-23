@@ -16,7 +16,7 @@ class WebViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        guard let url = URL(string: "https://oauth.vk.com/authorize?client_id=6777501&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&response_type=token&v=5.92") else { return }
+        guard let url = URL(string: "https://oauth.vk.com/authorize?client_id=6777501&display=mobile&redirect_uri=https://oauth.vk.com/blank.html&response_type=token&v=5.92&scope=friends,wall") else { return }
         
         let urlRequest = URLRequest(url: url)
         webView.navigationDelegate = self

@@ -10,44 +10,45 @@ import UIKit
 
 class PostDetailViewController: UIViewController {
     
-    @IBOutlet weak var avatarImageView: UIImageView!
-    @IBOutlet weak var nameOfGroupLabel: UILabel!
     @IBOutlet weak var textOfPostLabel: UILabel!
     @IBOutlet weak var contentImageView: UIImageView!
+    @IBOutlet weak var likeCountLabel: UILabel!
+    @IBOutlet weak var commentCountLabel: UILabel!
     
-    weak var mainViewController: NewsViewController!
-    var selectedIndex:Int!
+    
     var viewControllerUtils: ViewControllerUtils!
+    
+    var postObject: PostObject?
     
     // MARK: - Методы -
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         viewControllerUtils = ViewControllerUtilsImplementation()
+        filling()
     }
     
     // MARK: - Adding content and sharing -
     
-    /// заполнение данных из основного контроллера в новое окно детальной информации.
-//    func filling() {
-//        
-//        if let avatarData = mainViewController.somePostArray[selectedIndex].avatar as Data? {
-//            avatarImageView.image = UIImage(data: avatarData)
-//        }
-//        nameOfGroupLabel.text = mainViewController.somePostArray[selectedIndex].name
-//        textOfPostLabel.text = mainViewController.somePostArray[selectedIndex].textDescription
-//        if let avatarData = mainViewController.somePostArray[selectedIndex].someImage as Data? {
-//            contentImageView.image = UIImage(data: avatarData)
-//        }
-//    }
+    // заполнение данных из основного контроллера в новое окно детальной информации.
+    func filling() {
+        
+        if postObject?.attachments?.first?.photoObject?.photoSizeObject?.first?.url?.count ?? 0 > 0 {
+            contentImageView.downloaded(from: postObject?.attachments?.first?.photoObject?.photoSizeObject?.first?.url ?? "")
+        }
+        
+        textOfPostLabel.text = postObject?.text
+        likeCountLabel.text = String(postObject?.likes?.count ?? 0)
+        commentCountLabel.text = String(postObject?.comments?.count ?? 0)
+        
+    }
     
     
     /// метод для шаринга с помощью UIActivityViewController
     ///
     /// - Parameter sender: any sender
     @IBAction func sharingAction(_ sender: Any) {
-        
-        viewControllerUtils.shareAction(textOfPostLabel: textOfPostLabel, currentViewController: mainViewController)
+        viewControllerUtils.shareAction(textOfPostLabel: postObject?.text, currentViewController: self)
     }
 }
